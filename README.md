@@ -1,1 +1,1 @@
-# Sora---weather-app
+# Sora - weather app
