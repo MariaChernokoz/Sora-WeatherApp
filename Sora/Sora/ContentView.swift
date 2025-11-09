@@ -16,7 +16,7 @@ struct ContentView: View {
             
             VideoBackgroundView(videoName: "totoro_rain_1 2") //"totoro_rain_1"
             
-            VStack(spacing: 20) {
+            VStack(spacing: 10) {
                 HStack(spacing: 10) {
                     Text(temperature)
                         .font(.system(size: 72, weight: .bold))
@@ -27,10 +27,11 @@ struct ContentView: View {
                         .foregroundColor(.primary.opacity(0.8))
                 }
                 .padding(.vertical, 30)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 30)
                 .glassEffect(.clear)
                 
                 Spacer()
+                
             }
             .padding()
         }
