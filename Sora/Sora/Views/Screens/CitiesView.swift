@@ -1,16 +1,15 @@
 //
-//  MapView.swift
+//  CitiesView.swift
 //  Sora
 //
-//  Created by Chernokoz on 07.11.2025.
+//  Created by Chernokoz on 09.11.2025.
 //
 
 import SwiftUI
 
-struct MapView: View {
+struct CitiesView: View {
     var body: some View {
         ZStack {
-            // Временный градиентный фон
             LinearGradient(
                 colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.5)],
                 startPoint: .topLeading,
@@ -22,19 +21,32 @@ struct MapView: View {
                 Spacer()
                 
                 VStack(spacing: 20) {
-                    Image(systemName: "map.fill")
+                    Image(systemName: "list.bullet")
                         .font(.system(size: 60))
                         .foregroundColor(.white.opacity(0.8))
                     
-                    Text("Карта осадков")
+                    Text("Список городов")
                         .font(.title2)
                         .foregroundColor(.white)
                     
-                    Text("Здесь будет карта с осадками")
+                    Text("Здесь будет список ваших городов")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
+                    
+                    Button(action: {
+                        
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Добавить город")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .glassEffect()
+                    }
                 }
                 .padding(40)
                 .glassEffect(.clear)
@@ -47,5 +59,5 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView()
+    CitiesView()
 }
