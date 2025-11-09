@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CitiesView: View {
+    @State var cityInput: String = ""
     var body: some View {
         ZStack {
             LinearGradient(
@@ -18,6 +19,10 @@ struct CitiesView: View {
             .ignoresSafeArea()
             
             VStack {
+                TextField("Введите название города...", text: $cityInput)
+                    .padding(16)
+                    .glassEffect(.clear)
+                
                 Spacer()
                 
                 VStack(spacing: 20) {

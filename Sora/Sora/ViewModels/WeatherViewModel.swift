@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct WeatherViewModel {
+    let temperature: String
+    let condition: String
+    //let hourlyForecasts: [HourlyForecast]
+    let videoAsset: String
+}
