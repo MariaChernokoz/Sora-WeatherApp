@@ -7,15 +7,21 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 
 final class CityService {
     
-    private let geocoder = CLGeocoder()
-    
     func getCoordinates(forCityName cityName: String) async throws-> CLLocationCoordinate2D {
+
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = cityName
+        request.resultTypes = .address
         
-        let placemarks = try await geocoder.geocodeAddressString(cityName)
-        guard let location = placemarks.first?.location else {
+        let search = MKLocalSearch(request: request)
+        let response = try await search.start()
+        
+        guard let item = response.mapItems.first,
+              let location = item.placemark.location else {
             throw CityServiceError.cityNotFound
         }
         
