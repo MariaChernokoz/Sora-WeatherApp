@@ -29,7 +29,6 @@ final class CityService {
     }
 }
 
-
 enum CityServiceError: Error {
     case cityNotFound
     case generalGeocodingError
