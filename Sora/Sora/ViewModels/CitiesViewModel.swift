@@ -18,7 +18,13 @@ final class CitiesViewModel: ObservableObject {
     
     private let cityService: CityService
     
-    init(cityService: CityService = CityService(), initialCities: [City] = []) {
+    init(cityService: CityService = CityService(), initialCities: [City] = [
+        City(id: UUID(), name: "Москва", latitude: 55.7558, longitude: 37.6176, isCurrentLocation: false),
+        City(id: UUID(), name: "Токио", latitude: 35.6895, longitude: 139.6917, isCurrentLocation: false),
+        City(id: UUID(), name: "Лондон", latitude: 51.509865, longitude: -0.118092, isCurrentLocation: false),
+        City(id: UUID(), name: "Нью-Йорк", latitude: 40.712776, longitude: -74.005974, isCurrentLocation: false),
+        City(id: UUID(), name: "Сидней", latitude: -33.868820, longitude: 151.209290, isCurrentLocation: false)
+    ]) {
         self.cityService = cityService
         self.cities = initialCities
     }
