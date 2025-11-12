@@ -11,7 +11,7 @@ import MapKit
 
 final class CityService {
     
-    func getCoordinates(forCityName cityName: String) async throws-> CLLocationCoordinate2D {
+    func getCoordinates(forCityName cityName: String) async throws -> CLLocationCoordinate2D {
 
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = cityName

@@ -57,3 +57,5 @@ final class CitiesViewModel: ObservableObject {
         }
     }
 }
+
+

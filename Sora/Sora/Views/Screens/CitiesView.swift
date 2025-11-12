@@ -9,7 +9,6 @@ import SwiftUI
 
 struct CitiesView: View {
     @StateObject var viewModel = CitiesViewModel()
-    //(cities: ["Moscow", "New York", "London", "Tokyo", "Berlin"])
     
     var body: some View {
         ZStack {
@@ -42,15 +41,21 @@ struct CitiesView: View {
                             Spacer()
                             
                             VStack(alignment: .trailing, spacing: 4) {
-                                Text("Широта: \(city.latitude, specifier: "%.4f")")
+                                Text("Широта: \(city.latitude, specifier: "%.2f")")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                 
-                                Text("Долгота: \(city.longitude, specifier: "%.4f")")
+                                Text("Долгота: \(city.longitude, specifier: "%.2f")")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                
+                                Text("Погода: \(city.longitude, specifier: "%.2f")")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                         }
+                        .padding()
+                        .glassEffect(.clear)
                     }
                     .listRowBackground(Color.clear)
                 }
