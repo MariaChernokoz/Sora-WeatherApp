@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CitiesView: View {
+    
     @StateObject var viewModel = CitiesViewModel()
     
     var body: some View {
@@ -20,46 +21,10 @@ struct CitiesView: View {
             .ignoresSafeArea()
             
             VStack {
-                TextField("Введите название города...", text: $viewModel.cityInput)
-                    .padding(16)
-                    .glassEffect(.clear)
-                    .onSubmit {
-                        viewModel.addNewCity()
-                    }
-                    .scrollDismissesKeyboard(.immediately)
                 
-                if viewModel.isLoading {
-                    ProgressView("Ищем город...")
-                }
+                searchSection
                 
-                List {
-                    ForEach(viewModel.cities) { city in
-                        HStack {
-                            Text(city.name)
-                                .font(.headline)
-                            
-                            Spacer()
-                            
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text("Широта: \(city.latitude, specifier: "%.2f")")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                Text("Долгота: \(city.longitude, specifier: "%.2f")")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                
-                                Text("Погода: \(city.longitude, specifier: "%.2f")")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .padding()
-                        .glassEffect(.clear)
-                    }
-                    .listRowBackground(Color.clear)
-                }
-                .scrollContentBackground(.hidden)
+                cityList
                 
                 Spacer()
                 
@@ -73,6 +38,57 @@ struct CitiesView: View {
             }
             .padding()
         }
+    }
+    
+    // MARK: - Components
+
+    private var searchSection: some View {
+        HStack {
+            TextField("Название города...", text: $viewModel.cityInput)
+                .padding(16)
+                .glassEffect(.clear)
+                .padding(.horizontal)
+                .onSubmit {
+                    viewModel.addNewCity()
+                }
+                .scrollDismissesKeyboard(.immediately)
+            
+            if viewModel.isLoading {
+                ProgressView("Ищем город...")
+                    .padding(.trailing, 8)
+            }
+        }
+    }
+    
+    private var cityList: some View {
+        List {
+            ForEach(viewModel.cities) { city in
+                HStack {
+                    if city.isCurrentLocation {
+                        Image(systemName: "location.fill")
+                            .foregroundColor(.blue)
+                    }
+                    
+                    VStack(alignment: .leading) {
+                        Text(city.name)
+                            .font(.headline)
+                        
+                        Text(
+                            "Lat: \(city.latitude, specifier: "%.4f"), Lon: \(city.longitude, specifier: "%.4f")"
+                        )
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+            }
+            .onDelete { indexSet in
+                viewModel.deleteCities(at: indexSet)
+            }
+            .listRowBackground(Color.clear)
+        }
+        .scrollContentBackground(.hidden)
     }
 }
 

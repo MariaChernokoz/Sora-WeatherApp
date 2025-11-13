@@ -27,9 +27,24 @@ final class CityService {
         
         return location.coordinate
     }
+    
+    func getCityName(from coordinates: CLLocationCoordinate2D) async throws -> String {
+        
+        let geocoder = CLGeocoder()
+        let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+        let placemarks = try await geocoder.reverseGeocodeLocation(location)
+        
+        guard let placemark = placemarks.first,
+              let city = placemark.locality else {
+            throw CityServiceError.reverseGeocodingError
+        }
+        
+        return city
+    }
 }
 
 enum CityServiceError: Error {
     case cityNotFound
     case generalGeocodingError
+    case reverseGeocodingError
 }
