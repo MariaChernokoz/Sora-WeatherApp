@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CityWeather: Identifiable {
+struct CityWeather: Codable, Identifiable {
     let id = UUID()
     let temperature: String
     let symbolName: String

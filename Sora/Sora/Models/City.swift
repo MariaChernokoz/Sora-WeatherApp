@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 struct City: Codable, Identifiable {
     let id: UUID
@@ -13,5 +14,10 @@ struct City: Codable, Identifiable {
     let latitude: Double
     let longitude: Double
     let isCurrentLocation: Bool
+    
     var weatherData: CityWeather?
+    
+    var coordinate: CLLocationCoordinate2D {
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
 }
