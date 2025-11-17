@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import SwiftUI
 import MapKit
 import Combine
+import SwiftUI
 
 final class CitiesViewModel: ObservableObject {
     @Published var cities: [City] = []
@@ -102,7 +102,7 @@ final class CitiesViewModel: ObservableObject {
                 self.cities.insert(currentLocationCity, at: 0)
 
             } catch {
-                print("Geolocation failed with error: \(error)")
+                print("Geolocation error: \(error)")
             }
         }
     }

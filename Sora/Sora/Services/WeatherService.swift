@@ -10,3 +10,5 @@ import WeatherKit
 import CoreLocation
 
 let weatherService = WeatherService()
+private let apiKey = ""
+private let baseUrl = "https://api.openweathermap.org/data/2.5/weather"

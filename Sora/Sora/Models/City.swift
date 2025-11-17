@@ -13,4 +13,5 @@ struct City: Codable, Identifiable {
     let latitude: Double
     let longitude: Double
     let isCurrentLocation: Bool
+    var weatherData: CityWeather?
 }
