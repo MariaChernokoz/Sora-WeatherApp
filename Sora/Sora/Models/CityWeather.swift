@@ -12,4 +12,8 @@ struct CityWeather: Codable, Identifiable {
     let temperature: String
     let symbolName: String
     let description: String
+    
+    private enum CodingKeys: String, CodingKey {
+        case temperature, symbolName, description
+    }
 }

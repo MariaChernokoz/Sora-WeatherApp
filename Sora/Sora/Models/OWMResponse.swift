@@ -7,16 +7,15 @@
 
 import Foundation
 
-struct OWMResponse: Decodable {
+struct OWMResponse: Codable {
     let main: Main
     let weather: [Weather]
     
-    struct Main: Decodable {
+    struct Main: Codable {
         let temp: Double
     }
     
-    struct Weather: Decodable {
-        let id: Int
+    struct Weather: Codable {
         let description: String
         let icon: String
     }
