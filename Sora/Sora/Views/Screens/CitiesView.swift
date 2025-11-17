@@ -81,6 +81,24 @@ struct CitiesView: View {
                     }
                     
                     Spacer()
+                    
+                    if let weather = city.weatherData {
+                        HStack(spacing: 15) {
+                            
+                            Image(systemName: weather.symbolName)
+                                .imageScale(.large)
+                                .foregroundColor(.orange)
+                            
+                            Text(weather.temperature)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                        }
+                    } else {
+                        Text("—")
+                            .font(.title2)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal,15)
+                    }
                 }
             }
             .onDelete { indexSet in

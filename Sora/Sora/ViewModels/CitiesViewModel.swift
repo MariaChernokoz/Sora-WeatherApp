@@ -9,6 +9,7 @@ import Foundation
 import MapKit
 import Combine
 import SwiftUI
+import CoreLocation
 
 final class CitiesViewModel: ObservableObject {
     @Published var cities: [City] = []
@@ -17,6 +18,7 @@ final class CitiesViewModel: ObservableObject {
     @Published var error: Error? = nil
     
     private let cityService: CityService
+    private let weatherService: WeatherService
     
     private let locationService: LocationService
     private var cancellables = Set<AnyCancellable>()
@@ -31,6 +33,7 @@ final class CitiesViewModel: ObservableObject {
         City(id: UUID(), name: "Сидней", latitude: -33.868820, longitude: 151.209290, isCurrentLocation: false)
     ]) {
         self.cityService = cityService
+        self.weatherService = WeatherService()
         self.locationService = locationService
         self.cities = initialCities
         
@@ -91,18 +94,21 @@ final class CitiesViewModel: ObservableObject {
 
                 let cityName = try await cityService.getCityName(from: coordinates)
                 
+                let weatherData = try await weatherService.fetchWeather(for: coordinates)
+                
                 let currentLocationCity = City(
                     id: UUID(),
                     name: cityName,
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude,
-                    isCurrentLocation: true
+                    isCurrentLocation: true,
+                    weatherData: weatherData
                 )
                 
                 self.cities.insert(currentLocationCity, at: 0)
 
             } catch {
-                print("Geolocation error: \(error)")
+                print("Geolocation error or WeatherData fetching error: \(error)")
             }
         }
     }
