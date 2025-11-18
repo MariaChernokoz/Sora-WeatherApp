@@ -38,6 +38,10 @@ final class CitiesViewModel: ObservableObject {
         self.cities = initialCities
         
         setupLocationSubscription()
+        
+        self.cities.forEach { city in
+            self.fetchWeatherForCity(city: city)
+        }
     }
     
     func addNewCity() {
@@ -55,11 +59,13 @@ final class CitiesViewModel: ObservableObject {
                     name: self.cityInput,
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude,
-                    isCurrentLocation: false
+                    isCurrentLocation: false,
+                    weatherData: nil
                 )
                 
                 self.cities.append(newCity)
                 self.cityInput = ""
+                self.fetchWeatherForCity(city: newCity)
             } catch {
                 self.error = error
             }
@@ -109,6 +115,25 @@ final class CitiesViewModel: ObservableObject {
 
             } catch {
                 print("Geolocation error or WeatherData fetching error: \(error)")
+            }
+        }
+    }
+    
+    func fetchWeatherForCity(city: City) {
+        Task { @MainActor in
+            do {
+                
+                let weatherData = try await weatherService.fetchWeather(for: city.coordinate)
+                
+                var updatedCity = city
+                updatedCity.weatherData = weatherData
+                
+                if let index = self.cities.firstIndex(where: { $0.id == city.id }) {
+                    self.cities[index] = updatedCity
+                }
+                
+            } catch {
+                print("Error fetching weather for \(city.name): \(error.localizedDescription)")
             }
         }
     }
