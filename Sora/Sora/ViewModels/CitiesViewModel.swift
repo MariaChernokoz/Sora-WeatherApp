@@ -16,13 +16,15 @@ final class CitiesViewModel: ObservableObject {
     @Published var cityInput: String = ""
     @Published var isLoading: Bool = false
     @Published var error: Error? = nil
-    
+
+    private var weatherTask: Task<Void, Never>?
+
     private let cityService: CityService
     private let weatherService: WeatherService
-    
+
     private let locationService: LocationService
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(cityService: CityService = CityService(),
          locationService: LocationService = LocationService(),
          initialCities: [City] = [
@@ -36,24 +38,24 @@ final class CitiesViewModel: ObservableObject {
         self.weatherService = WeatherService()
         self.locationService = locationService
         self.cities = initialCities
-        
+
         setupLocationSubscription()
-        
+
         self.cities.forEach { city in
             self.fetchWeatherForCity(city: city)
         }
     }
-    
+
     func addNewCity() {
         guard !cityInput.isEmpty else { return }
-        
+
         self.isLoading = true
         self.error = nil
-        
+
         Task {
             do {
                 let coordinates = try await self.cityService.getCoordinates(forCityName: self.cityInput)
-                
+
                 let newCity = City(
                     id: UUID(),
                     name: self.cityInput,
@@ -62,28 +64,27 @@ final class CitiesViewModel: ObservableObject {
                     isCurrentLocation: false,
                     weatherData: nil
                 )
-                
+
                 self.cities.append(newCity)
                 self.cityInput = ""
                 self.fetchWeatherForCity(city: newCity)
             } catch {
                 self.error = error
             }
-            
+
             self.isLoading = false
         }
     }
-    
+
     private func setupLocationSubscription() {
-        
         locationService.requestAuthorization()
-        
+
         locationService.locationPublisher
             .sink { [weak self] coordinates in
                 self?.handleNewLocation(coordinates: coordinates)
             }
             .store(in: &cancellables)
-        
+
         locationService.$authorizationStatus
             .sink { [weak self] status in
                 if status == .authorizedWhenInUse || status == .authorizedAlways {
@@ -92,16 +93,26 @@ final class CitiesViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
+
     private func handleNewLocation(coordinates: CLLocationCoordinate2D) {
-        Task { @MainActor in
+        
+        weatherTask?.cancel()
+
+        print("--- [Location Update] ---")
+        print("Новые координаты: Lat \(coordinates.latitude), Lon \(coordinates.longitude)")
+
+        weatherTask = Task { @MainActor in
+            
+            guard !Task.isCancelled else { return }
             do {
                 self.cities.removeAll(where: { $0.isCurrentLocation })
 
                 let cityName = try await cityService.getCityName(from: coordinates)
-                
+
+                guard !Task.isCancelled else { return }
+
                 let weatherData = try await weatherService.fetchWeather(for: coordinates)
-                
+
                 let currentLocationCity = City(
                     id: UUID(),
                     name: cityName,
@@ -110,7 +121,7 @@ final class CitiesViewModel: ObservableObject {
                     isCurrentLocation: true,
                     weatherData: weatherData
                 )
-                
+
                 self.cities.insert(currentLocationCity, at: 0)
 
             } catch {
@@ -118,29 +129,27 @@ final class CitiesViewModel: ObservableObject {
             }
         }
     }
-    
+
     func fetchWeatherForCity(city: City) {
         Task { @MainActor in
             do {
-                
+
                 let weatherData = try await weatherService.fetchWeather(for: city.coordinate)
-                
+
                 var updatedCity = city
                 updatedCity.weatherData = weatherData
-                
+
                 if let index = self.cities.firstIndex(where: { $0.id == city.id }) {
                     self.cities[index] = updatedCity
                 }
-                
+
             } catch {
                 print("Error fetching weather for \(city.name): \(error.localizedDescription)")
             }
         }
     }
-    
+
     func deleteCities(at offsets: IndexSet) {
         cities.remove(atOffsets: offsets)
     }
 }
-
-

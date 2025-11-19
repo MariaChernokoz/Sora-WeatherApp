@@ -73,11 +73,11 @@ struct CitiesView: View {
                         Text(city.name)
                             .font(.headline)
                         
-                        Text(
-                            "Lat: \(city.latitude, specifier: "%.4f"), Lon: \(city.longitude, specifier: "%.4f")"
-                        )
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        if let weather = city.weatherData {
+                            Text(weather.description)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
                     
                     Spacer()
