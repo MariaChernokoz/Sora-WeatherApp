@@ -1,5 +1,5 @@
 //
-//  CitiesViewModel.swift
+//  CityViewModel.swift
 //  Sora
 //
 //  Created by Chernokoz on 10.11.2025.
@@ -11,7 +11,7 @@ import Combine
 import SwiftUI
 import CoreLocation
 
-final class CitiesViewModel: ObservableObject {
+final class CityViewModel: ObservableObject {
     @Published var cities: [City] = []
     @Published var cityInput: String = ""
     @Published var isLoading: Bool = false

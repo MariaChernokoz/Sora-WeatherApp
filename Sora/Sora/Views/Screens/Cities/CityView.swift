@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct CitiesView: View {
+struct CityView: View {
     
-    @StateObject var viewModel = CitiesViewModel()
+    @StateObject var viewModel = CityViewModel()
     
     var body: some View {
         ZStack {
@@ -111,5 +111,5 @@ struct CitiesView: View {
 }
 
 #Preview {
-    CitiesView()
+    CityView()
 }

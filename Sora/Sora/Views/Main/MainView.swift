@@ -24,7 +24,7 @@ struct MainView: View {
                     Label("Map", systemImage: "map.fill")
                 }
             
-            CitiesView()
+            CityView()
                 .tag(Tab.cities)
                 .tabItem {
                     Label("Cities", systemImage: "list.bullet")
