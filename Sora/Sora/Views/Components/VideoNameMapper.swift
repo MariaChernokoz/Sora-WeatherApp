@@ -8,30 +8,42 @@
 import Foundation
 
 struct VideoNameMapper {
+    //Сопоставление имя SF-символа с именем видеофайла
     static func getVideoName(for symbolName: String?) -> String? {
         guard let symbolName = symbolName else { return nil }
-        
-        switch symbolName {
-        case "sun.max.fill", "moon.fill":
-            return "clear_sky_day_1"
             
-        case "cloud.sun.fill", "cloud.moon.fill", "cloud.fill":
+        switch symbolName {
+        // Ясно
+        case "sun.max.fill", "moon.fill":
+            return "sunny_day_1"
+        
+        // Переменчивая облачность
+        case "cloud.sun.fill", "cloud.moon.fill":
+            return "clear_sky_day_1"
+        
+        // Облачно
+        case "cloud.fill":
             return "cloudy_day_1"
             
+        // Легкий дождь/морось
         case "cloud.drizzle.fill":
-            return "shower_rain_day_1"
+            return "totoro_rain_1 2"
             
+        // Сильный дождь
         case "cloud.rain.fill", "cloud.heavyrain.fill":
             return "rainy_day_1"
             
+        // Гроза
         case "cloud.bolt.fill":
             return "stormy_day_1"
             
+        // Снег
         case "cloud.snow.fill":
             return "snowy_day_1"
             
+        // Туман/смог (!)
         case "cloud.fog.fill", "smoke.fill":
-            return "mist"
+            return "totoro_rain_1 2"
 
         default:
             return nil

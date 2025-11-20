@@ -22,7 +22,6 @@ struct CustomVideoPlayer: UIViewRepresentable {
             if playerView.currentVideoName != videoName || playerView.isRotated != isRotated {
                  playerView.updateVideo(videoName: videoName, isRotated: isRotated)
             }
-            //playerView.updateVideo(videoName: videoName)
         }
     }
 }
@@ -54,6 +53,12 @@ class PlayerUIView: UIView {
             print("Video not found: \(videoName)")
             return
         }
+        
+        if let urls = Bundle.main.urls(forResourcesWithExtension: "mp4", subdirectory: nil) {
+             for url in urls {
+                 print("Bundle mp4: \(url.lastPathComponent)")
+             }
+         }
 
         self.currentVideoName = videoName
         self.isRotated = isRotated
