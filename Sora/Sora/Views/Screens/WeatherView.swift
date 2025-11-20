@@ -13,7 +13,7 @@ struct WeatherView: View {
     
     var body: some View {
         ZStack {
-            VideoBackgroundView(videoName: "totoro_rain_1 2")
+            VideoBackgroundView(videoName: "totoro_rain_1 2", isRotated: true)
             
             VStack(spacing: 10) {
                 HStack(spacing: 10) {

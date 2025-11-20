@@ -11,14 +11,18 @@ import AVFoundation
 
 struct CustomVideoPlayer: UIViewRepresentable {
     let videoName: String
+    let isRotated: Bool
     
     func makeUIView(context: Context) -> UIView {
-        return PlayerUIView(videoName: videoName)
+        return PlayerUIView(videoName: videoName, isRotated: isRotated)
     }
     
     func updateUIView(_ uiView: UIView, context: Context) {
         if let playerView = uiView as? PlayerUIView {
-            playerView.updateVideo(videoName: videoName)
+            if playerView.currentVideoName != videoName || playerView.isRotated != isRotated {
+                 playerView.updateVideo(videoName: videoName, isRotated: isRotated)
+            }
+            //playerView.updateVideo(videoName: videoName)
         }
     }
 }
@@ -29,16 +33,21 @@ class PlayerUIView: UIView {
     private var playerItem: AVPlayerItem?
     private var loopObserver: NSObjectProtocol?
     
-    init(videoName: String) {
+    var currentVideoName: String?
+    var isRotated: Bool
+    
+    init(videoName: String, isRotated: Bool) {
+        self.isRotated = isRotated
         super.init(frame: .zero)
-        setupVideo(videoName: videoName)
+        self.currentVideoName = videoName
+        setupVideo(videoName: videoName, isRotated: isRotated)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupVideo(videoName: String) {
+    private func setupVideo(videoName: String, isRotated: Bool) {
         cleanup()
         
         guard let url = Bundle.main.url(forResource: videoName, withExtension: "mp4") else {
@@ -46,13 +55,21 @@ class PlayerUIView: UIView {
             return
         }
 
+        self.currentVideoName = videoName
+        self.isRotated = isRotated
+        
         playerItem = AVPlayerItem(url: url)
         player = AVPlayer(playerItem: playerItem)
         player?.isMuted = true
         
         playerLayer.player = player
         playerLayer.videoGravity = .resizeAspectFill
-        playerLayer.setAffineTransform(CGAffineTransform(rotationAngle: .pi / 2))
+        
+        if isRotated {
+            playerLayer.setAffineTransform(CGAffineTransform(rotationAngle: .pi / 2))
+        } else {
+            playerLayer.setAffineTransform(.identity)
+        }
         
         layer.addSublayer(playerLayer)
         
@@ -61,8 +78,8 @@ class PlayerUIView: UIView {
         player?.play()
     }
     
-    func updateVideo(videoName: String) {
-        setupVideo(videoName: videoName)
+    func updateVideo(videoName: String, isRotated: Bool) {
+        setupVideo(videoName: videoName, isRotated: isRotated)
     }
     
     private func setupLoopObserver() {
@@ -105,9 +122,10 @@ class PlayerUIView: UIView {
 
 struct VideoBackgroundView: View {
     let videoName: String
+    let isRotated: Bool
     
     var body: some View {
-        CustomVideoPlayer(videoName: videoName)
+        CustomVideoPlayer(videoName: videoName, isRotated: isRotated)
             .ignoresSafeArea(.all, edges: .all)
     }
 }
