@@ -27,11 +27,11 @@ struct VideoNameMapper {
             
         // Легкий дождь/морось
         case "cloud.drizzle.fill":
-            return "totoro_rain_1 2"
+            return "rainy_day_1"
             
         // Сильный дождь
         case "cloud.rain.fill", "cloud.heavyrain.fill":
-            return "rainy_day_1"
+            return "totoro_rain_1 2"
             
         // Гроза
         case "cloud.bolt.fill":

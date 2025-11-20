@@ -109,9 +109,6 @@ struct CityView: View {
                 }
                 .listRowBackground(
                     backgroundVideo(for: city.weatherData?.symbolName, сityName: city.name)
-//                        .overlay(Color.black.opacity(0.3))
-//                        .clipShape(RoundedRectangle(cornerRadius: 10))
-//                        .padding(.vertical, 5)
                 )
             }
             .onDelete { indexSet in
@@ -127,8 +124,8 @@ struct CityView: View {
             
         let videoName = VideoNameMapper.getVideoName(for: symbolName)
         
-        //log
-            print("[\(сityName)] SF Symbol Name: \(symbolName ?? "N/A"), Video Name: \(videoName ?? "N/A")")
+//        //logs
+//            print("[\(сityName)] SF Symbol Name: \(symbolName ?? "N/A"), Video Name: \(videoName ?? "N/A")")
         
         if let name = videoName {
             return AnyView(CustomVideoPlayer(videoName: name, isRotated: false))
