@@ -15,7 +15,7 @@ struct CityView: View {
         NavigationStack {
             ZStack {
                 LinearGradient(
-                    colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.5)],
+                    colors: [Color.black.opacity(0.9), Color.black.opacity(0.7), Color.black.opacity(0.9)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -47,20 +47,33 @@ struct CityView: View {
 
     private var searchSection: some View {
         HStack {
-            TextField("Название города...", text: $viewModel.cityInput)
-                .padding(16)
-                .glassEffect(.clear)
-                .padding(.horizontal)
-                .onSubmit {
-                    viewModel.addNewCity()
+            ZStack(alignment: .leading) {
+                if viewModel.cityInput.isEmpty {
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("Поиск города...")
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .padding(16)
                 }
-                .scrollDismissesKeyboard(.immediately)
-            
+                TextField("", text: $viewModel.cityInput)
+                    .padding(.leading, 12)
+                    .foregroundColor(.white.opacity(0.9))
+                    .padding(16)
+                    .padding(.horizontal)
+                    .onSubmit {
+                        viewModel.addNewCity()
+                    }
+                    .scrollDismissesKeyboard(.immediately)
+            }
             if viewModel.isLoading {
                 ProgressView("Ищем город...")
                     .padding(.trailing, 8)
             }
         }
+        .glassEffect(.clear)
+        .padding(.horizontal)
     }
     
     private var cityList: some View {
