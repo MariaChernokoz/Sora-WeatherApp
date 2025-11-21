@@ -12,7 +12,7 @@ struct MapView: View {
         ZStack {
             // Временный градиентный фон
             LinearGradient(
-                colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.5)],
+                colors: [Color.black.opacity(0.9), Color.black.opacity(0.7), Color.black.opacity(0.9)],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )

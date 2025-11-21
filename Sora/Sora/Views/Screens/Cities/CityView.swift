@@ -81,40 +81,49 @@ struct CityView: View {
             ForEach(viewModel.cities) { city in
                 NavigationLink(destination: CityDetailView(city: city)) {
                     HStack {
-                        if city.isCurrentLocation {
-                            Image(systemName: "location.fill")
-                                .foregroundColor(.blue)
-                        }
-                        
                         VStack(alignment: .leading) {
-                            Text(city.name)
-                                .font(.headline)
+                            HStack {
+                                if city.isCurrentLocation {
+                                    Image(systemName: "location.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.caption)
+                                }
+                                
+                                Text(city.name)
+                                    .font(.headline)
+                                    .foregroundColor(.white.opacity(0.9))
+                            }
                             
                             if let weather = city.weatherData {
                                 Text(weather.description)
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.white.opacity(0.8))
                             }
                         }
+                        .padding(.leading, 10)
                         
                         Spacer()
                         
                         if let weather = city.weatherData {
-                            HStack(spacing: 15) {
+                            HStack {
                                 
                                 Image(systemName: weather.symbolName)
                                     .imageScale(.large)
+                                    //.foregroundColor(.white.opacity(0.95))
                                     .foregroundColor(.orange)
                                 
                                 Text(weather.temperature)
-                                    .font(.title2)
-                                    .fontWeight(.bold)
+                                    .font(.largeTitle)
+                                    .foregroundColor(.white.opacity(0.9))
+                                    .frame(width: 66, alignment: .trailing)
+                                    .monospacedDigit()
                             }
                         } else {
-                            Text("—")
-                                .font(.title2)
+                            Text("Загружаю погоду...")
+                                .font(.caption)
                                 .foregroundColor(.gray)
                                 .padding(.horizontal,15)
+                                .frame(width: 150, alignment: .trailing)
                         }
                     }
                     .padding(.vertical, 10)
