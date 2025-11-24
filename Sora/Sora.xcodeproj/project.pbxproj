@@ -10,9 +10,22 @@
 		F608FC462EBD2F9F00D5FC3E /* Sora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F62226242ED487E300104AE7 /* Exceptions for "Sora" folder in "Sora" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F608FC452EBD2F9F00D5FC3E /* Sora */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F608FC482EBD2F9F00D5FC3E /* Sora */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F62226242ED487E300104AE7 /* Exceptions for "Sora" folder in "Sora" target */,
+			);
 			path = Sora;
 			sourceTree = "<group>";
 		};
@@ -253,6 +266,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sora/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your application requires access to your location to show weather forecasts for your city.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -297,6 +311,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Sora/Info.plist;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your application requires access to your location to show weather forecasts for your city.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

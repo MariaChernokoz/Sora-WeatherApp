@@ -52,10 +52,25 @@ final class WeatherService {
             
             let description = weather.description.capitalized
             
+            let windSpeed = owmResponse.wind?.speed ?? 0.0
+            let windDeg = owmResponse.wind?.deg ?? 0.0
+            
+            let sunrise = owmResponse.sys?.sunrise
+            let sunset = owmResponse.sys?.sunset
+            
             return CityWeather(
                 temperature: temperature,
                 symbolName: symbolName,
-                description: description
+                description: description,
+                feels_like: owmResponse.main.feels_like,
+                temp_min: owmResponse.main.temp_min,
+                temp_max: owmResponse.main.temp_max,
+                pressure: owmResponse.main.pressure,
+                humidity: owmResponse.main.humidity,
+                sunrise: sunrise,
+                sunset: sunset,
+                windSpeed: windSpeed,
+                windDeg: windDeg
             )
             
         } catch {
