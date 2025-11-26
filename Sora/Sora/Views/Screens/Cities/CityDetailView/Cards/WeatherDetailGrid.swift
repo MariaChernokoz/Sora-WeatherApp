@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct WeatherDetailsGrid: View {
-    // CityWeather должна быть доступна в этом модуле.
     let weather: CityWeather
 
     var body: some View {
@@ -32,7 +31,7 @@ struct WeatherDetailsGrid: View {
                     unit: "%"
                 )
             }
-            .padding(.top, 40)
+            .padding(.top, 20)
 
             HStack(spacing: 10) {
                 // Давление
@@ -81,6 +80,6 @@ struct WeatherDetailsGrid: View {
     }
 }
 
-#Preview {
-    WeatherDetailGrid()
-}
+//#Preview {
+//    WeatherDetailGrid()
+//}

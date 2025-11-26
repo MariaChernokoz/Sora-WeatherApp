@@ -45,96 +45,29 @@ struct CityDetailView: View {
                             .foregroundColor(.white.opacity(0.95))
                             .shadow(color: Color.black.opacity(0.4), radius: 2)
                         
-                        Group {
-                            HStack(spacing: 10) {
-                                WeatherDetailCard(
-                                    title: "Ощущается",
-                                    iconName: "thermometer",
-                                    iconColor: .orange.opacity(0.8),
-                                    value: "\(Int(weather.feels_like.rounded()))",
-                                    unit: "°"
-                                )
-                                
-                                WeatherDetailCard(
-                                    title: "Влажность",
-                                    iconName: "drop",
-                                    iconColor: .blue.opacity(0.8),
-                                    value: "\(weather.humidity)",
-                                    unit: "%"
-                                )
-                            }
-                            .padding(.top, 40)
-                            
-                            HStack(spacing: 10) {
-                                WeatherDetailCard(
-                                    title: "Давление",
-                                    iconName: "barometer",
-                                    iconColor: .gray,
-                                    value: "\(hPaToMmHg(hPa: weather.pressure))",
-                                    unit: "мм "
-                                )
-                                .glassEffect(.clear)
-                                
-                                WeatherDetailCard(
-                                    title: "Ветер \(windDirection(for: weather.windDeg))",
-                                    iconName: "wind",
-                                    iconColor: .green,
-                                    value: String(format: "%.1f", weather.windSpeed),
-                                    unit: "м/с"
-                                )
-                                .glassEffect(.clear)
-                            }
-                            
-                            HStack {
-                                WeatherDetailCard(
-                                    title: "Восход",
-                                    iconName: "sunrise.fill",
-                                    iconColor: .yellow,
-                                    value: timeString(from: weather.sunrise), 
-                                    unit: ""
-                                )
-                                .glassEffect(.clear)
-                                
-                                WeatherDetailCard(
-                                    title: "Закат",
-                                    iconName: "sunset.fill",
-                                    iconColor: .orange,
-                                    value: timeString(from: weather.sunset),
-                                    unit: ""
-                                )
-                                .glassEffect(.clear)
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                        
                         if let hourlyForecasts = city.hourlyForecasts, !hourlyForecasts.isEmpty {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("Прогноз на 5 дней (3 часа)")
-                                    .font(.headline)
-                                    .foregroundColor(.white.opacity(0.9))
-                                    .padding(.horizontal)
-                                
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 15) {
                                         ForEach(hourlyForecasts) { forecast in
-                                            // 4.2. Мы добавим сюда HourlyForecastCard
                                             HourlyForecastCard(forecast: forecast)
                                         }
                                     }
                                     .padding(.horizontal)
-                                    .padding(.bottom, 20)
                                 }
-                                .padding(.top, 5)
+                                .padding(.top, 30)
                             }
                         }
+                        
+                        WeatherDetailsGrid(weather: weather)
+                            .padding(.horizontal)
                         
                     } else {
                         Text("Погодные данные временно недоступны.")
                             .foregroundColor(.white.opacity(0.7))
                     }
                 }
-                .padding(.top, 30)
+                .padding(.top, 10)
             }
         }
     }

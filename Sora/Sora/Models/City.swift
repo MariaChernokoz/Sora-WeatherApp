@@ -17,6 +17,8 @@ struct City: Codable, Identifiable {
     
     var weatherData: CityWeather?
     
+    var hourlyForecasts: [HourlyForecast]?
+    
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }

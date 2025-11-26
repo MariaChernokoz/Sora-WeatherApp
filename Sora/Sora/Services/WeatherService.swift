@@ -11,6 +11,7 @@ import CoreLocation
 final class WeatherService {
     private lazy var apiKey: String = self.getAPIKey()
     private let baseUrl = "https://api.openweathermap.org/data/2.5/weather"
+    private let forecastUrl = "https://api.openweathermap.org/data/2.5/forecast"
     private let decoder = JSONDecoder()
 
     private func getAPIKey() -> String {
@@ -77,6 +78,45 @@ final class WeatherService {
             throw WeatherServiceError.decodingError(error)
         }
     }
+
+    func fetchForecast(for coordinate: CLLocationCoordinate2D) async throws -> [HourlyForecast] {
+
+        let urlString = "\(forecastUrl)?lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&appid=\(apiKey)&units=metric&lang=ru"
+
+        guard let url = URL(string: urlString) else {
+            throw WeatherServiceError.invalidURL
+        }
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw WeatherServiceError.networkError(NSError(domain: "Network", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: "HTTP Status Error"]))
+        }
+
+        do {
+            let owmForecastResponse = try decoder.decode(ForecastOWMResponse.self, from: data)
+                    
+            let hourlyForecasts = owmForecastResponse.list.map { item in
+                let tempString = self.formatTemperature(item.main.temp)
+                let timeString = self.formatTime(from: item.dt)
+                let iconName = self.getSFName(for: item.weather.first?.icon ?? "01d")
+                
+                return HourlyForecast(time: timeString, temperature: tempString, symbolName: iconName)
+            }
+            
+//            //logs
+//            print("--- [Forecast Ready for UI] ---")
+//            if let firstFormattedItem = hourlyForecasts.first {
+//                print("Первая форматированная точка: \(firstFormattedItem.time), \(firstFormattedItem.temperature), Icon: \(firstFormattedItem.symbolName)")
+//            }
+//            print("-------------------------------")
+            
+            return hourlyForecasts
+
+        } catch {
+            throw WeatherServiceError.decodingError(error)
+        }
+    }
     
     private func getSFName(for iconCode: String) -> String {
         switch iconCode {
@@ -94,6 +134,18 @@ final class WeatherService {
         case "50d", "50n": return "cloud.fog.fill"
         default: return "questionmark.circle.fill"
         }
+    }
+    
+    private func formatTime(from timestamp: TimeInterval) -> String {
+        let date = Date(timeIntervalSince1970: timestamp)
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ru_RU")
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
+    }
+
+    private func formatTemperature(_ temp: Double) -> String {
+        return String(format: "%.0f°", temp)
     }
 }
 

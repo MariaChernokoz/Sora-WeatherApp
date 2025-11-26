@@ -56,7 +56,7 @@ class PlayerUIView: UIView {
         
         if let urls = Bundle.main.urls(forResourcesWithExtension: "mp4", subdirectory: nil) {
              for url in urls {
-                 print("Bundle mp4: \(url.lastPathComponent)")
+                 //print("Bundle mp4: \(url.lastPathComponent)")
              }
          }
 

@@ -135,9 +135,12 @@ final class CityViewModel: ObservableObject {
             do {
 
                 let weatherData = try await weatherService.fetchWeather(for: city.coordinate)
+                
+                let hourlyForecasts = try await weatherService.fetchForecast(for: city.coordinate)
 
                 var updatedCity = city
                 updatedCity.weatherData = weatherData
+                updatedCity.hourlyForecasts = hourlyForecasts
 
                 if let index = self.cities.firstIndex(where: { $0.id == city.id }) {
                     self.cities[index] = updatedCity
