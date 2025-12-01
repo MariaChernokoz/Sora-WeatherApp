@@ -18,11 +18,11 @@ struct MainView: View {
                     Label("Weather", systemImage: "cloud.sun.fill")
                 }
             
-            MapView()
-                .tag(Tab.map)
-                .tabItem {
-                    Label("Map", systemImage: "map.fill")
-                }
+//            MapView()
+//                .tag(Tab.map)
+//                .tabItem {
+//                    Label("Map", systemImage: "map.fill")
+//                }
             
             CityView()
                 .tag(Tab.cities)
