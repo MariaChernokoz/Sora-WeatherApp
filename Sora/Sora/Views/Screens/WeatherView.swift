@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct WeatherView: View {
+    
+    @EnvironmentObject var viewModel: CityViewModel
+    
     @State private var temperature = "22°"
     @State private var weatherDescription = "Идеальный день для маленького приключения"
     

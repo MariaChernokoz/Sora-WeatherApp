@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CityView: View {
     
-    @StateObject var viewModel = CityViewModel()
+    @EnvironmentObject var viewModel: CityViewModel
     
     var body: some View {
         NavigationStack {

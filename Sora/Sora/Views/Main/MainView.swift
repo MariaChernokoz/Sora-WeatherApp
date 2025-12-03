@@ -6,9 +6,20 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainView: View {
+    
+    @Environment(\.modelContext) private var modelContext
+    
+    @StateObject private var cityViewModel: CityViewModel
+    
     @State private var selectedTab: Tab = .weather
+    
+    init() {
+        let viewModel = CityViewModel(context: ModelContext(try! SwiftData.ModelContainer(for: CityEntity.self)))
+        _cityViewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -18,18 +29,13 @@ struct MainView: View {
                     Label("Weather", systemImage: "cloud.sun.fill")
                 }
             
-//            MapView()
-//                .tag(Tab.map)
-//                .tabItem {
-//                    Label("Map", systemImage: "map.fill")
-//                }
-            
             CityView()
                 .tag(Tab.cities)
                 .tabItem {
                     Label("Cities", systemImage: "list.bullet")
                 }
         }
+        .environmentObject(cityViewModel)
         .tabViewStyle(.sidebarAdaptable)
         .tint(.white)
     }

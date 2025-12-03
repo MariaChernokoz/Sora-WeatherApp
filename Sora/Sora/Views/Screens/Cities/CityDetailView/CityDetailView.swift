@@ -89,7 +89,6 @@ struct CityDetailView: View {
         windDeg: 180
     )
     let sampleCity = City(
-        id: UUID(),
         name: "Москва",
         latitude: 55.7558,
         longitude: 37.6173,

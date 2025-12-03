@@ -10,7 +10,9 @@ import MapKit
 import Combine
 import SwiftUI
 import CoreLocation
+import SwiftData
 
+@MainActor
 final class CityViewModel: ObservableObject {
     @Published var cities: [City] = []
     @Published var cityInput: String = ""
@@ -24,26 +26,21 @@ final class CityViewModel: ObservableObject {
 
     private let locationService: LocationService
     private var cancellables = Set<AnyCancellable>()
+    
+    private let context: ModelContext
 
-    init(cityService: CityService = CityService(),
-         locationService: LocationService = LocationService(),
-         initialCities: [City] = [
-        City(id: UUID(), name: "Москва", latitude: 55.7558, longitude: 37.6176, isCurrentLocation: false),
-        City(id: UUID(), name: "Токио", latitude: 35.6895, longitude: 139.6917, isCurrentLocation: false),
-        City(id: UUID(), name: "Лондон", latitude: 51.509865, longitude: -0.118092, isCurrentLocation: false),
-        City(id: UUID(), name: "Нью-Йорк", latitude: 40.712776, longitude: -74.005974, isCurrentLocation: false),
-        City(id: UUID(), name: "Сидней", latitude: -33.868820, longitude: 151.209290, isCurrentLocation: false)
-    ]) {
+    init(context: ModelContext,
+         cityService: CityService = CityService(),
+         locationService: LocationService = LocationService()
+    ) {
+        self.context = context
         self.cityService = cityService
         self.weatherService = WeatherService()
         self.locationService = locationService
-        self.cities = initialCities
-
+        
+        self.fetchSavedCities()
+        
         setupLocationSubscription()
-
-        self.cities.forEach { city in
-            self.fetchWeatherForCity(city: city)
-        }
     }
 
     func addNewCity() {
@@ -52,22 +49,36 @@ final class CityViewModel: ObservableObject {
         self.isLoading = true
         self.error = nil
 
-        Task {
+        Task { @MainActor in
             do {
                 let coordinates = try await self.cityService.getCoordinates(forCityName: self.cityInput)
+                
+                let lat = coordinates.latitude
+                let lon = coordinates.longitude
+                
+                let predicate = #Predicate<CityEntity> {
+                    $0.latitude == lat && $0.longitude == lon
+                }
+                let existingCities = try context.fetch(FetchDescriptor<CityEntity>(predicate: predicate))
+                
+                if !existingCities.isEmpty {
+                    self.error = NSError(domain: "CityError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Город уже добавлен."])
+                    self.isLoading = false
+                    return
+                }
 
-                let newCity = City(
-                    id: UUID(),
+                let newEntity = CityEntity(
                     name: self.cityInput,
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude,
-                    isCurrentLocation: false,
-                    weatherData: nil
+                    isCurrentLocation: false
                 )
-
-                self.cities.append(newCity)
+                
+                context.insert(newEntity)
+                try context.save()
+                
                 self.cityInput = ""
-                self.fetchWeatherForCity(city: newCity)
+                self.fetchSavedCities()
             } catch {
                 self.error = error
             }
@@ -93,6 +104,27 @@ final class CityViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+    func fetchSavedCities() {
+        do {
+            let fetch = FetchDescriptor<CityEntity>()
+            let cityEntities = try context.fetch(fetch)
+            
+            var loadedCities = cityEntities.map { City(entity: $0) }
+            
+            if let currentLocation = self.cities.first(where: { $0.isCurrentLocation }) {
+                loadedCities.insert(currentLocation, at: 0)
+            }
+            
+            self.cities = loadedCities
+            
+            self.cities.forEach { city in
+                self.fetchWeatherForCity(city: city)
+            }
+        } catch {
+            self.error = error
+        }
+    }
 
     private func handleNewLocation(coordinates: CLLocationCoordinate2D) {
         
@@ -114,7 +146,6 @@ final class CityViewModel: ObservableObject {
                 let weatherData = try await weatherService.fetchWeather(for: coordinates)
 
                 let currentLocationCity = City(
-                    id: UUID(),
                     name: cityName,
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude,
@@ -153,6 +184,38 @@ final class CityViewModel: ObservableObject {
     }
 
     func deleteCities(at offsets: IndexSet) {
-        cities.remove(atOffsets: offsets)
+        
+        let citiesToDelete = offsets.map { self.cities[$0] }
+        
+        for city in citiesToDelete {
+            guard !city.isCurrentLocation else { continue }
+            
+            let cityName = city.name
+            let cityLatitude = city.latitude
+            let cityLongitude = city.longitude
+
+            do {
+                let predicate = #Predicate<CityEntity> {
+                    $0.name == cityName &&
+                    $0.latitude == cityLatitude &&
+                    $0.longitude == cityLongitude
+                }
+                
+                let fetch = FetchDescriptor<CityEntity>(predicate: predicate)
+                
+                if let entity = try context.fetch(fetch).first {
+                    context.delete(entity)
+                }
+            } catch {
+                print("❌ DELETE-ERROR: Не удалось найти сущность для удаления: \(error)")
+            }
+        }
+        
+        do {
+            try context.save()
+            self.fetchSavedCities()
+        } catch {
+            print("❌ DELETE-ERROR: Ошибка сохранения после удаления: \(error)")
+        }
     }
 }

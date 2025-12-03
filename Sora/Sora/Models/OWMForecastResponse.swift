@@ -31,7 +31,7 @@ struct ForecastItem: Codable {
     let wind: OWMResponse.Wind?
 }
 
-struct HourlyForecast: Codable, Identifiable {
+struct HourlyForecast: Codable, Identifiable, Equatable {
     let id = UUID()
     let time: String
     let temperature: String
