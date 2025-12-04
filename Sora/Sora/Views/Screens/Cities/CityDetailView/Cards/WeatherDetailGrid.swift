@@ -12,7 +12,7 @@ struct WeatherDetailsGrid: View {
 
     var body: some View {
         Group {
-            HStack(spacing: 10) {
+            HStack(spacing: 20) {
                 // Ощущается
                 WeatherDetailCard(
                     title: "Ощущается",
@@ -31,9 +31,9 @@ struct WeatherDetailsGrid: View {
                     unit: "%"
                 )
             }
-            .padding(.top, 20)
+            .padding(.top, 12)
 
-            HStack(spacing: 10) {
+            HStack(spacing: 20) {
                 // Давление
                 WeatherDetailCard(
                     title: "Давление",
@@ -42,7 +42,6 @@ struct WeatherDetailsGrid: View {
                     value: "\(hPaToMmHg(hPa: weather.pressure))",
                     unit: "мм "
                 )
-                .glassEffect(.clear)
                 
                 // Ветер
                 WeatherDetailCard(
@@ -52,10 +51,9 @@ struct WeatherDetailsGrid: View {
                     value: String(format: "%.1f", weather.windSpeed),
                     unit: "м/с"
                 )
-                .glassEffect(.clear)
             }
 
-            HStack {
+            HStack(spacing: 16) {
                 // Восход
                 WeatherDetailCard(
                     title: "Восход",
@@ -64,7 +62,6 @@ struct WeatherDetailsGrid: View {
                     value: timeString(from: weather.sunrise),
                     unit: ""
                 )
-                .glassEffect(.clear)
                 
                 // Закат
                 WeatherDetailCard(
@@ -74,9 +71,9 @@ struct WeatherDetailsGrid: View {
                     value: timeString(from: weather.sunset),
                     unit: ""
                 )
-                .glassEffect(.clear)
             }
         }
+        //.padding(.horizontal, 16)
     }
 }
 

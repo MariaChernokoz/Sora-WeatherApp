@@ -166,17 +166,57 @@ final class CityViewModel: ObservableObject {
             do {
 
                 let weatherData = try await weatherService.fetchWeather(for: city.coordinate)
-                
                 let hourlyForecasts = try await weatherService.fetchForecast(for: city.coordinate)
+
+                var dailyForecasts: [DailyForecast] = []
+                
+                //MARK: Aggregation logic for Daily Forecast
+                let groupedByDay = Dictionary(grouping: hourlyForecasts) { forecast in
+                    return Calendar.current.startOfDay(for: forecast.date)
+                }
+                .sorted(by: { $0.key < $1.key })
+                
+                let today = Calendar.current.startOfDay(for: Date())
+                
+                for (date, forecastsForDay) in groupedByDay {
+                    
+                    if date == today {
+                        continue
+                    }
+                    
+                    if dailyForecasts.count >= 4 {
+                        break
+                    }
+                    
+                    let minTemp = forecastsForDay.min(by: { $0.rawTemperature < $1.rawTemperature })?.rawTemperature ?? 0
+                    let maxTemp = forecastsForDay.max(by: { $0.rawTemperature < $1.rawTemperature })?.rawTemperature ?? 0
+                    
+                    let middayForecast = forecastsForDay.min(by: { abs(Calendar.current.component(.hour, from: $0.date) - 12) < abs(Calendar.current.component(.hour, from: $1.date) - 12) }) ?? forecastsForDay.first!
+                    
+                    let dailyForecast = DailyForecast(
+                        date: date,
+                        minTemperature: minTemp,
+                        maxTemperature: maxTemp,
+                        symbolName: middayForecast.symbolName,
+                        description: middayForecast.description
+                    )
+                    
+                    dailyForecasts.append(dailyForecast)
+                }
+                
 
                 var updatedCity = city
                 updatedCity.weatherData = weatherData
-                updatedCity.hourlyForecasts = hourlyForecasts
-
+                
+                let now = Date()
+                updatedCity.hourlyForecasts = hourlyForecasts.filter { $0.date >= now }
+                
+                updatedCity.dailyForecasts = dailyForecasts
+                
                 if let index = self.cities.firstIndex(where: { $0.id == city.id }) {
                     self.cities[index] = updatedCity
                 }
-
+                
             } catch {
                 print("Error fetching weather for \(city.name): \(error.localizedDescription)")
             }
@@ -207,7 +247,7 @@ final class CityViewModel: ObservableObject {
                     context.delete(entity)
                 }
             } catch {
-                print("❌ DELETE-ERROR: Не удалось найти сущность для удаления: \(error)")
+                print("DELETE-ERROR: Не удалось найти сущность для удаления: \(error)")
             }
         }
         
@@ -215,7 +255,7 @@ final class CityViewModel: ObservableObject {
             try context.save()
             self.fetchSavedCities()
         } catch {
-            print("❌ DELETE-ERROR: Ошибка сохранения после удаления: \(error)")
+            print("DELETE-ERROR: Ошибка сохранения после удаления: \(error)")
         }
     }
 }

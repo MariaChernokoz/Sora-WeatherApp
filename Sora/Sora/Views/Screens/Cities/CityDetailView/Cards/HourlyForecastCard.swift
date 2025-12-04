@@ -11,7 +11,7 @@ struct HourlyForecastCard: View {
     let forecast: HourlyForecast
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             
             Text(forecast.time)
                 .font(.subheadline)
@@ -28,11 +28,11 @@ struct HourlyForecastCard: View {
                 .fontWeight(.bold)
                 .foregroundColor(.white)
         }
-        .padding(12)
-        .frame(width: 80)
-        .background(Color.black.opacity(0.35))
-        .glassEffect(.regular)
-        .cornerRadius(60)
+        .padding(.top, 8)
+//        .frame(width: 80)
+//        .background(Color.black.opacity(0.35))
+//        .glassEffect(.regular)
+//        .cornerRadius(60)
     }
 }
 

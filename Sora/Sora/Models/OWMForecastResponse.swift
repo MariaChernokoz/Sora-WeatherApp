@@ -33,7 +33,10 @@ struct ForecastItem: Codable {
 
 struct HourlyForecast: Codable, Identifiable, Equatable {
     let id = UUID()
+    let date: Date
+    let rawTemperature: Double
     let time: String
     let temperature: String
     let symbolName: String
+    let description: String
 }

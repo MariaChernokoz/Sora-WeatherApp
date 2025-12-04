@@ -46,17 +46,58 @@ struct CityDetailView: View {
                             .shadow(color: Color.black.opacity(0.4), radius: 2)
                         
                         if let hourlyForecasts = city.hourlyForecasts, !hourlyForecasts.isEmpty {
-                            VStack(alignment: .leading, spacing: 10) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                    
+                                Text("ПОЧАСОВОЙ ПРОГНОЗ НА СЕГОДНЯ")
+                                    .font(.system(size: 16))
+                                    .fontWeight(.medium)
+                                    .foregroundColor(.white.opacity(0.9))
+                                
+                                Divider()
+                                    .overlay(Color.white.opacity(0.3))
+                                
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 15) {
                                         ForEach(hourlyForecasts) { forecast in
                                             HourlyForecastCard(forecast: forecast)
                                         }
                                     }
-                                    .padding(.horizontal)
                                 }
-                                .padding(.top, 30)
                             }
+                            .padding()
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .padding(.horizontal)
+                            .padding(.top, 20)
+                        }
+                        
+                        if let dailyForecasts = city.dailyForecasts, !dailyForecasts.isEmpty {
+                            VStack(alignment: .leading, spacing: 5) {
+                                HStack {
+                                    Image(systemName: "calendar")
+                                        //.renderingMode(.original)
+                                        .font(.title2)
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .frame(width: 30)
+                                    
+                                    Text("ПРОГНОЗ НА 4 ДНЯ")
+                                        .font(.system(size: 16))
+                                        .fontWeight(.medium)
+                                        .foregroundColor(.white.opacity(0.9))
+                                }
+                                
+                                Divider()
+                                    .overlay(Color.white.opacity(0.3))
+                                
+                                ForEach(dailyForecasts) { forecast in
+                                    DailyForecastRow(forecast: forecast)
+                                }
+                            }
+                            .padding()
+                            .background(Color.black.opacity(0.3))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .padding(.horizontal)
+                            .padding(.top, 20)
                         }
                         
                         WeatherDetailsGrid(weather: weather)

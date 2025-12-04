@@ -36,11 +36,10 @@ struct WeatherDetailCard: View {
                     .padding(.trailing, 8)
             }
         }
-        .frame(width: 180, height: 120)
-        .background(Color.black.opacity(0.28))
-        .glassEffect(.regular)
-        .shadow(color: Color.black.opacity(0.2), radius: 8)
-        .cornerRadius(60)
+        .frame(width: 195, height: 110)
+        .background(Color.black.opacity(0.3))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(.top, 6)
     }
 }
 

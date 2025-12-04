@@ -17,6 +17,7 @@ struct City: Identifiable, Equatable {
     
     var weatherData: CityWeather?
     var hourlyForecasts: [HourlyForecast]?
+    var dailyForecasts: [DailyForecast]?
     
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)

@@ -95,13 +95,25 @@ final class WeatherService {
 
         do {
             let owmForecastResponse = try decoder.decode(ForecastOWMResponse.self, from: data)
-                    
+                 
             let hourlyForecasts = owmForecastResponse.list.map { item in
-                let tempString = self.formatTemperature(item.main.temp)
-                let timeString = self.formatTime(from: item.dt)
-                let iconName = self.getSFName(for: item.weather.first?.icon ?? "01d")
+                let rawTemp = item.main.temp
+                let timeInterval = item.dt
                 
-                return HourlyForecast(time: timeString, temperature: tempString, symbolName: iconName)
+                let tempString = self.formatTemperature(rawTemp)
+                let timeString = self.formatTime(from: timeInterval)
+                
+                let iconName = self.getSFName(for: item.weather.first?.icon ?? "01d")
+                let description = item.weather.first?.description.capitalized ?? ""
+                
+                return HourlyForecast(
+                    date: Date(timeIntervalSince1970: timeInterval),
+                    rawTemperature: rawTemp,
+                    time: timeString,
+                    temperature: tempString,
+                    symbolName: iconName,
+                    description: description
+                )
             }
             
 //            //logs
