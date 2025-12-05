@@ -16,7 +16,7 @@ struct CityView: View {
         NavigationStack {
             ZStack {
                 LinearGradient(
-                    colors: [Color.black.opacity(0.9), Color.black.opacity(0.7), Color.black.opacity(0.9)],
+                    colors: [Color.black.opacity(0.6), Color.black.opacity(0.3), Color.black.opacity(0.5)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
