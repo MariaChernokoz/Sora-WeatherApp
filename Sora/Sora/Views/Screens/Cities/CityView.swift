@@ -10,6 +10,7 @@ import SwiftUI
 struct CityView: View {
     
     @EnvironmentObject var viewModel: CityViewModel
+    //@State private var activeCity: City?
     
     var body: some View {
         NavigationStack {
@@ -78,70 +79,79 @@ struct CityView: View {
     }
     
     private var cityList: some View {
-        ScrollView {
-            VStack(spacing: 12) {
-                ForEach(viewModel.cities) { city in
-                    NavigationLink(destination: CityDetailView(city: city, videoName: VideoNameMapper.getVideoName(for: city.weatherData?.symbolName))) {
-                        ZStack {
-                            backgroundVideo(for: city.weatherData?.symbolName, сityName: city.name)
-                                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    HStack {
-                                        if city.isCurrentLocation {
-                                            Image(systemName: "location.fill")
-                                                .foregroundColor(.blue)
-                                                .font(.caption)
-                                        }
-                                        
-                                        Text(city.name)
-                                            .font(.headline)
-                                            .foregroundColor(.white.opacity(0.9))
-                                            .padding(.vertical, 16)
+        List {
+            ForEach(viewModel.cities) { city in
+                NavigationLink(destination: CityDetailView(city: city, videoName: VideoNameMapper.getVideoName(for: city.weatherData?.symbolName))) {
+                    ZStack {
+                        backgroundVideo(for: city.weatherData?.symbolName, сityName: city.name)
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        HStack {
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    if city.isCurrentLocation {
+                                        Image(systemName: "location.fill")
+                                            .foregroundColor(.blue)
+                                            .font(.caption)
                                     }
                                     
-                                    if let weather = city.weatherData {
-                                        Text(weather.description)
-                                            .font(.caption)
-                                            .foregroundColor(.white.opacity(0.8))
-                                    }
+                                    Text(city.name)
+                                        .font(.headline)
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .padding(.vertical, 16)
                                 }
-                                .padding(.leading, 10)
-                                
-                                Spacer()
                                 
                                 if let weather = city.weatherData {
-                                    HStack {
-                                        Image(systemName: weather.symbolName)
-                                            .imageScale(.large)
-                                            .foregroundColor(.orange)
-                                        
-                                        Text(weather.temperature)
-                                            .font(.largeTitle)
-                                            .foregroundColor(.white.opacity(0.9))
-                                            .frame(width: 66, alignment: .trailing)
-                                            .monospacedDigit()
-                                    }
-                                } else {
-                                    Text("Загружаю погоду...")
+                                    Text(weather.description)
                                         .font(.caption)
-                                        .foregroundColor(.gray)
-                                        .padding(.horizontal,15)
-                                        .frame(width: 150, alignment: .trailing)
+                                        .foregroundColor(.white.opacity(0.8))
+                                }
+                            }
+                            .padding(.leading, 10)
+                            
+                            Spacer()
+                            
+                            if let weather = city.weatherData {
+                                HStack {
+                                    Image(systemName: weather.symbolName)
+                                        .imageScale(.large)
+                                        .foregroundColor(.orange)
+                                    
+                                    Text(weather.temperature)
+                                        .font(.largeTitle)
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .frame(width: 66, alignment: .trailing)
+                                        .monospacedDigit()
+                                }
+                            } else {
+                                Text("Загружаю погоду...")
+                                    .font(.caption)
+                                    .foregroundColor(.gray)
+                                    .padding(.horizontal,15)
+                                    .frame(width: 150, alignment: .trailing)
                                 }
                             }
                             .padding(.vertical, 16)
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal, 8)
                         }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        //.padding(.horizontal, 4)
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 1)
+                        .padding(.bottom, 8)
                     }
                     .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
                 }
+                .onDelete(perform: viewModel.deleteCities)
             }
-            .padding(.top, 8)
-            .padding(.horizontal, 2)
-        }
+        //.frame(maxWidth: .infinity, alignment: .center)
+        .listStyle(.plain)
+        .padding(.top, 8)
+        //.padding(.leading, 20)
+        .scrollIndicators(.hidden)
+        //.ignoresSafeArea(.all, edges: .bottom)
     }
     
     private func backgroundVideo(for symbolName: String?, сityName: String) -> some View {

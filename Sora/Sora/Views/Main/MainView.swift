@@ -35,6 +35,7 @@ struct MainView: View {
                     Label("Cities", systemImage: "list.bullet")
                 }
         }
+        .toolbarBackground(.hidden, for: .tabBar)
         .environmentObject(cityViewModel)
         .tabViewStyle(.sidebarAdaptable)
         .tint(.white)
