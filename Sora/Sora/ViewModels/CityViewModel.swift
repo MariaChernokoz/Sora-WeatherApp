@@ -18,6 +18,7 @@ final class CityViewModel: ObservableObject {
     @Published var cityInput: String = ""
     @Published var isLoading: Bool = false
     @Published var error: Error? = nil
+    @Published var searchCompleter: CitySearchCompleter
 
     private var weatherTask: Task<Void, Never>?
 
@@ -37,10 +38,15 @@ final class CityViewModel: ObservableObject {
         self.cityService = cityService
         self.weatherService = WeatherService()
         self.locationService = locationService
+        self.searchCompleter = CitySearchCompleter()
         
         self.fetchSavedCities()
-        
         setupLocationSubscription()
+        
+        $cityInput
+            .debounce(for: 0.3, scheduler: RunLoop.main) // Ждем 0.3 секунды после последнего ввода
+            .assign(to: \.queryFragment, on: self.searchCompleter)
+            .store(in: &cancellables)
     }
 
     func addNewCity() {
@@ -257,5 +263,11 @@ final class CityViewModel: ObservableObject {
         } catch {
             print("DELETE-ERROR: Ошибка сохранения после удаления: \(error)")
         }
+    }
+    
+    func selectCity(completion: CitySearchCompletion) {
+        self.cityInput = completion.title
+        self.searchCompleter.completions = []
+        self.addNewCity()
     }
 }
