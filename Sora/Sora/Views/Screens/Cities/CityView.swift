@@ -12,6 +12,8 @@ struct CityView: View {
     @EnvironmentObject var viewModel: CityViewModel
     //@State private var activeCity: City?
     
+    @State private var showingSearch = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -42,70 +44,33 @@ struct CityView: View {
                 .padding()
                 
             }
+            .sheet(isPresented: $showingSearch) {
+                SearchView()
+                    .environmentObject(viewModel)
+                    .presentationDetents([.large])
+                    .interactiveDismissDisabled(false)
+            }
         }
     }
     
     // MARK: - Components
-
+    
     private var searchSection: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        Button {
+            showingSearch = true
+        } label: {
             HStack {
-                ZStack(alignment: .leading) {
-                    if viewModel.cityInput.isEmpty {
-                        HStack(spacing: 8) {
-                            Image(systemName: "magnifyingglass")
-                                .foregroundColor(.white.opacity(0.6))
-                            Text("Поиск города...")
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-                        .padding(16)
-                    }
-                    TextField("", text: $viewModel.cityInput)
-                        .padding(.leading, 12)
-                        .foregroundColor(.white.opacity(0.9))
-                        .padding(16)
-                        .padding(.horizontal)
-                        .onSubmit {
-                            viewModel.addNewCity()
-                        }
-                        .scrollDismissesKeyboard(.immediately)
-                }
-                if viewModel.isLoading {
-                    ProgressView("Ищем город...")
-                        .padding(.trailing, 8)
-                }
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.white.opacity(0.6))
+                Text("Поиск города...")
+                    .foregroundColor(.white.opacity(0.6))
+                Spacer()
             }
+            .padding(16)
             .glassEffect(.clear)
-            
-            if !viewModel.searchCompleter.completions.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(viewModel.searchCompleter.completions) { completion in
-                        Button {
-                            viewModel.selectCity(completion: completion)
-                        } label: {
-                            VStack(alignment: .leading) {
-                                Text(completion.title)
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                Text(completion.subtitle)
-                                    .font(.subheadline)
-                                    .foregroundColor(.gray)
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Divider().background(Color.white.opacity(0.1))
-                    }
-                }
-                .background(Color.black.opacity(0.7))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.top, 4)
-            }
         }
-        .padding(.horizontal)
+        .buttonStyle(.plain)
+        //.padding(.horizontal)
     }
     
     private var cityList: some View {

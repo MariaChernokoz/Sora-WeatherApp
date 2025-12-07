@@ -35,7 +35,19 @@ final class CitySearchCompleter: NSObject, ObservableObject, MKLocalSearchComple
     
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
         completions = completer.results
-            .filter { $0.title.lowercased().starts(with: self.queryFragment.lowercased()) }
+            .filter { result in
+                let titleLowercased = result.title.lowercased()
+                let subtitleLowercased = result.subtitle.lowercased()
+                
+                if titleLowercased.contains("улица") || titleLowercased.contains("проспект") || titleLowercased.contains("шоссе") {
+                    return false
+                }
+                
+                if let firstChar = subtitleLowercased.first, firstChar.isNumber {
+                    return false
+                }
+                return true
+            }
             .map {
                 let subtitle = $0.subtitle.components(separatedBy: ", ").last ?? $0.subtitle
                 return CitySearchCompletion(title: $0.title, subtitle: subtitle)

@@ -44,7 +44,7 @@ final class CityViewModel: ObservableObject {
         setupLocationSubscription()
         
         $cityInput
-            .debounce(for: 0.3, scheduler: RunLoop.main) // Ждем 0.3 секунды после последнего ввода
+            .debounce(for: 0.1, scheduler: RunLoop.main)
             .assign(to: \.queryFragment, on: self.searchCompleter)
             .store(in: &cancellables)
     }
@@ -59,12 +59,13 @@ final class CityViewModel: ObservableObject {
             do {
                 let coordinates = try await self.cityService.getCoordinates(forCityName: self.cityInput)
                 
-                let lat = coordinates.latitude
-                let lon = coordinates.longitude
-                
+                let lat: Double = coordinates.latitude
+                let lon: Double = coordinates.longitude
+
                 let predicate = #Predicate<CityEntity> {
                     $0.latitude == lat && $0.longitude == lon
                 }
+                
                 let existingCities = try context.fetch(FetchDescriptor<CityEntity>(predicate: predicate))
                 
                 if !existingCities.isEmpty {
@@ -266,8 +267,12 @@ final class CityViewModel: ObservableObject {
     }
     
     func selectCity(completion: CitySearchCompletion) {
-        self.cityInput = completion.title
+        let cleanedTitle = completion.title.components(separatedBy: ", ").first ?? completion.title
+        
+        self.cityInput = cleanedTitle
+        
         self.searchCompleter.completions = []
+        
         self.addNewCity()
     }
 }
