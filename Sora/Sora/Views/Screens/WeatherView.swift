@@ -10,31 +10,47 @@ import SwiftUI
 struct WeatherView: View {
     
     @EnvironmentObject var viewModel: CityViewModel
-    
-    @State private var temperature = "22°"
-    @State private var weatherDescription = "Идеальный день для маленького приключения"
+    @State private var selectedCityID: City.ID?
     
     var body: some View {
         ZStack {
-            VideoBackgroundView(videoName: "totoro_rain_1 2", isRotated: true)
-            
-            VStack(spacing: 10) {
-                HStack(spacing: 10) {
-                    Text(temperature)
-                        .font(.system(size: 72, weight: .bold))
-                        .foregroundColor(.primary.opacity(0.8))
-                    
-                    Text(weatherDescription)
-                        .font(.system(size: 18, weight: .light))
-                        .foregroundColor(.primary.opacity(0.8))
-                }
-                .padding(.vertical, 30)
-                .padding(.horizontal, 30)
-                .glassEffect(.clear)
+            if let currentCity = viewModel.cities.first(where: { $0.id == selectedCityID }),
+               let videoName = VideoNameMapper.getVideoName(for: currentCity.weatherData?.symbolName ?? "") {
                 
-                Spacer()
+                CustomVideoPlayer(videoName: videoName, isRotated: true)
+                    .ignoresSafeArea(.all)
+                    .background(Color.clear)
+                
+            } else if viewModel.cities.isEmpty {
+                VideoBackgroundView(videoName: "totoro_rain_1 2", isRotated: true)
+                    .ignoresSafeArea(.all)
+                    .background(Color.clear)
+                
+            } else {
+                Color.black.ignoresSafeArea(.all)
             }
-            .padding()
+
+            TabView(selection: $selectedCityID) {
+                if viewModel.cities.isEmpty {
+                    VStack {
+                        // placeholder
+                    }
+                        .background(Color.clear)
+                } else {
+                    ForEach(viewModel.cities) { city in
+                        CityDetailView(city: city, videoName: "")
+                            .tag(city.id as City.ID?)
+                            //.background(Color.red)
+                    }
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
+        }
+        .onAppear {
+            if selectedCityID == nil, let firstCity = viewModel.cities.first {
+                selectedCityID = firstCity.id
+            }
         }
     }
 }
