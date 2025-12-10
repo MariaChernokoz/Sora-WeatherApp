@@ -9,13 +9,6 @@ struct CityDetailView: View {
             if let videoName, !videoName.isEmpty {
                 CustomVideoPlayer(videoName: videoName, isRotated: true)
                     .ignoresSafeArea()
-            } else {
-                LinearGradient(
-                    colors: [Color.gray.opacity(0.7), Color.gray.opacity(0.4)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
             }
             
             ScrollView {
@@ -75,7 +68,6 @@ struct CityDetailView: View {
                             VStack(alignment: .leading, spacing: 5) {
                                 HStack {
                                     Image(systemName: "calendar")
-                                        //.renderingMode(.original)
                                         .font(.title2)
                                         .foregroundColor(.white.opacity(0.9))
                                         .frame(width: 30)

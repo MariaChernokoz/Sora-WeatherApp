@@ -19,28 +19,21 @@ struct WeatherView: View {
                 
                 CustomVideoPlayer(videoName: videoName, isRotated: true)
                     .ignoresSafeArea(.all)
-                    .background(Color.clear)
                 
             } else if viewModel.cities.isEmpty {
                 VideoBackgroundView(videoName: "totoro_rain_1 2", isRotated: true)
                     .ignoresSafeArea(.all)
-                    .background(Color.clear)
                 
             } else {
-                Color.black.ignoresSafeArea(.all)
+                Color.gray.ignoresSafeArea(.all)
             }
 
             TabView(selection: $selectedCityID) {
-                if viewModel.cities.isEmpty {
-                    VStack {
-                        // placeholder
-                    }
-                        .background(Color.clear)
-                } else {
+                if !viewModel.cities.isEmpty {
+
                     ForEach(viewModel.cities) { city in
                         CityDetailView(city: city, videoName: "")
                             .tag(city.id as City.ID?)
-                            //.background(Color.red)
                     }
                 }
             }
