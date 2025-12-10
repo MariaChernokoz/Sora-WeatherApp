@@ -49,6 +49,7 @@ final class CityViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
+
     func addNewCity() {
         guard !cityInput.isEmpty else { return }
 
@@ -134,33 +135,28 @@ final class CityViewModel: ObservableObject {
     }
 
     private func handleNewLocation(coordinates: CLLocationCoordinate2D) {
-        
         weatherTask?.cancel()
 
         print("--- [Location Update] ---")
         print("Новые координаты: Lat \(coordinates.latitude), Lon \(coordinates.longitude)")
 
         weatherTask = Task { @MainActor in
-            
             guard !Task.isCancelled else { return }
             do {
                 self.cities.removeAll(where: { $0.isCurrentLocation })
 
                 let cityName = try await cityService.getCityName(from: coordinates)
-
-                guard !Task.isCancelled else { return }
-
-                let weatherData = try await weatherService.fetchWeather(for: coordinates)
-
-                let currentLocationCity = City(
+                
+                let tempCity = City(
                     name: cityName,
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude,
-                    isCurrentLocation: true,
-                    weatherData: weatherData
+                    isCurrentLocation: true
                 )
+                
+                let updatedCity = try await self.loadFullWeatherData(for: tempCity, isCurrent: true)
 
-                self.cities.insert(currentLocationCity, at: 0)
+                self.cities.insert(updatedCity, at: 0)
 
             } catch {
                 print("Geolocation error or WeatherData fetching error: \(error)")
@@ -171,71 +167,62 @@ final class CityViewModel: ObservableObject {
     func fetchWeatherForCity(city: City) {
         Task { @MainActor in
             do {
-
-                let weatherData = try await weatherService.fetchWeather(for: city.coordinate)
-                let hourlyForecasts = try await weatherService.fetchForecast(for: city.coordinate)
-
-                var dailyForecasts: [DailyForecast] = []
-                
-                //MARK: Aggregation logic for Daily Forecast
-                let groupedByDay = Dictionary(grouping: hourlyForecasts) { forecast in
-                    return Calendar.current.startOfDay(for: forecast.date)
-                }
-                .sorted(by: { $0.key < $1.key })
-                
-                let today = Calendar.current.startOfDay(for: Date())
-                
-                for (date, forecastsForDay) in groupedByDay {
-                    
-                    if date == today {
-                        continue
-                    }
-                    
-                    if dailyForecasts.count >= 4 {
-                        break
-                    }
-                    
-                    let minTemp = forecastsForDay.min(by: { $0.rawTemperature < $1.rawTemperature })?.rawTemperature ?? 0
-                    let maxTemp = forecastsForDay.max(by: { $0.rawTemperature < $1.rawTemperature })?.rawTemperature ?? 0
-                    
-                    let middayForecast = forecastsForDay.min(by: { abs(Calendar.current.component(.hour, from: $0.date) - 12) < abs(Calendar.current.component(.hour, from: $1.date) - 12) }) ?? forecastsForDay.first!
-                    
-                    let dailyForecast = DailyForecast(
-                        date: date,
-                        minTemperature: minTemp,
-                        maxTemperature: maxTemp,
-                        symbolName: middayForecast.symbolName,
-                        description: middayForecast.description
-                    )
-                    
-                    dailyForecasts.append(dailyForecast)
-                }
-                
-
-                var updatedCity = city
-                updatedCity.weatherData = weatherData
-                
-                let now = Date()
-                
-                let twelveHoursLater = Calendar.current.date(byAdding: .hour, value: 24, to: now) ?? now.addingTimeInterval(24 * 3600)
-                
-                let limitedHourlyForecasts = hourlyForecasts
-                    .filter { $0.date >= now }
-                    .filter { $0.date <= twelveHoursLater }
-                    .prefix(8)
-                
-                updatedCity.hourlyForecasts = Array(limitedHourlyForecasts)
-                
-                updatedCity.dailyForecasts = dailyForecasts
+                let updatedCity = try await self.loadFullWeatherData(for: city, isCurrent: city.isCurrentLocation)
                 
                 if let index = self.cities.firstIndex(where: { $0.id == city.id }) {
                     self.cities[index] = updatedCity
                 }
-                
             } catch {
                 print("Error fetching weather for \(city.name): \(error.localizedDescription)")
             }
         }
+    }
+    
+    func loadFullWeatherData(for city: City, isCurrent: Bool) async throws -> City {
+        
+        let weatherData = try await weatherService.fetchWeather(for: city.coordinate)
+        let hourlyForecasts = try await weatherService.fetchForecast(for: city.coordinate)
+        
+        var dailyForecasts: [DailyForecast] = []
+        let groupedByDay = Dictionary(grouping: hourlyForecasts) { forecast in
+            return Calendar.current.startOfDay(for: forecast.date)
+        }
+        .sorted(by: { $0.key < $1.key })
+        
+        let today = Calendar.current.startOfDay(for: Date())
+        
+        for (date, forecastsForDay) in groupedByDay {
+            if date == today { continue }
+            if dailyForecasts.count >= 4 { break }
+            
+            let minTemp = forecastsForDay.min(by: { $0.rawTemperature < $1.rawTemperature })?.rawTemperature ?? 0
+            let maxTemp = forecastsForDay.max(by: { $0.rawTemperature < $1.rawTemperature })?.rawTemperature ?? 0
+            let middayForecast = forecastsForDay.min(by: { abs(Calendar.current.component(.hour, from: $0.date) - 12) < abs(Calendar.current.component(.hour, from: $1.date) - 12) }) ?? forecastsForDay.first!
+            
+            dailyForecasts.append(DailyForecast(
+                date: date,
+                minTemperature: minTemp,
+                maxTemperature: maxTemp,
+                symbolName: middayForecast.symbolName,
+                description: middayForecast.description
+            ))
+        }
+        
+        let now = Date()
+        let twelveHoursLater = Calendar.current.date(byAdding: .hour, value: 24, to: now) ?? now.addingTimeInterval(24 * 3600)
+        
+        let limitedHourlyForecasts = hourlyForecasts
+            .filter { $0.date >= now }
+            .filter { $0.date <= twelveHoursLater }
+            .prefix(8)
+
+        var updatedCity = city
+        updatedCity.weatherData = weatherData
+        updatedCity.hourlyForecasts = Array(limitedHourlyForecasts)
+        updatedCity.dailyForecasts = dailyForecasts
+        updatedCity.isCurrentLocation = isCurrent
+        
+        return updatedCity
     }
 
     func deleteCities(at offsets: IndexSet) {

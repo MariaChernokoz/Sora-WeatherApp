@@ -13,7 +13,7 @@ struct City: Identifiable, Equatable {
     let name: String
     let latitude: Double
     let longitude: Double
-    let isCurrentLocation: Bool
+    var isCurrentLocation: Bool
     
     var weatherData: CityWeather?
     var hourlyForecasts: [HourlyForecast]?
