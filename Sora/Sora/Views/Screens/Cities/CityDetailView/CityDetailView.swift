@@ -52,7 +52,10 @@ struct CityDetailView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 15) {
                                         ForEach(hourlyForecasts) { forecast in
-                                            HourlyForecastCard(forecast: forecast)
+                                            HourlyForecastCard(
+                                                forecast: forecast,
+                                                timezoneOffset: weather.timezoneOffset
+                                            )
                                         }
                                     }
                                 }
@@ -77,9 +80,7 @@ struct CityDetailView: View {
                                         .fontWeight(.medium)
                                         .foregroundColor(.white.opacity(0.9))
                                 }
-                                
-                                Divider()
-                                    .overlay(Color.white.opacity(0.3))
+
                                 
                                 ForEach(dailyForecasts) { forecast in
                                     DailyForecastRow(forecast: forecast)
@@ -93,7 +94,6 @@ struct CityDetailView: View {
                         }
                         
                         WeatherDetailsGrid(weather: weather)
-                            .padding(.horizontal)
                         
                     } else {
                         Text("Погодные данные временно недоступны.")
@@ -102,6 +102,7 @@ struct CityDetailView: View {
                 }
                 .padding(.top, 10)
             }
+            .scrollIndicators(.hidden)
         }
     }
 }
@@ -119,7 +120,8 @@ struct CityDetailView: View {
         sunrise: 1700790000,
         sunset: 1700826000,
         windSpeed: 3.5,
-        windDeg: 180
+        windDeg: 180,
+        timezoneOffset: 3
     )
     let sampleCity = City(
         name: "Москва",

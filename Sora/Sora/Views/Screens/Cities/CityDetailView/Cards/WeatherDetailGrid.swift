@@ -12,14 +12,15 @@ struct WeatherDetailsGrid: View {
 
     var body: some View {
         Group {
-            HStack(spacing: 20) {
+            HStack(spacing: 16) {
                 // Ощущается
                 WeatherDetailCard(
-                    title: "Ощущается",
+                    title: "Ощущается как",
                     iconName: "thermometer",
                     iconColor: .orange.opacity(0.8),
                     value: "\(Int(weather.feels_like.rounded()))",
-                    unit: "°"
+                    unit: "°",
+                    description: ""
                 )
 
                 // Влажность
@@ -28,28 +29,31 @@ struct WeatherDetailsGrid: View {
                     iconName: "drop",
                     iconColor: .blue.opacity(0.8),
                     value: "\(weather.humidity)",
-                    unit: "%"
+                    unit: "%",
+                    description: ""
                 )
             }
             .padding(.top, 12)
 
-            HStack(spacing: 20) {
+            HStack(spacing: 16) {
                 // Давление
                 WeatherDetailCard(
                     title: "Давление",
                     iconName: "barometer",
                     iconColor: .gray,
                     value: "\(hPaToMmHg(hPa: weather.pressure))",
-                    unit: "мм "
+                    unit: "мм ",
+                    description: ""
                 )
                 
                 // Ветер
                 WeatherDetailCard(
-                    title: "Ветер \(windDirection(for: weather.windDeg))",
+                    title: "Ветер",
                     iconName: "wind",
                     iconColor: .green,
                     value: String(format: "%.1f", weather.windSpeed),
-                    unit: "м/с"
+                    unit: "м/с",
+                    description: "\(windDirection(for: weather.windDeg))"
                 )
             }
 
@@ -59,8 +63,9 @@ struct WeatherDetailsGrid: View {
                     title: "Восход",
                     iconName: "sunrise.fill",
                     iconColor: .yellow,
-                    value: timeString(from: weather.sunrise),
-                    unit: ""
+                    value: formatTime(from: weather.sunrise.map { TimeInterval($0) }, offset: weather.timezoneOffset),
+                    unit: "",
+                    description: ""
                 )
                 
                 // Закат
@@ -68,12 +73,13 @@ struct WeatherDetailsGrid: View {
                     title: "Закат",
                     iconName: "sunset.fill",
                     iconColor: .orange,
-                    value: timeString(from: weather.sunset),
-                    unit: ""
+                    value: formatTime(from: weather.sunset.map { TimeInterval($0) }, offset: weather.timezoneOffset),
+                    unit: "",
+                    description: ""
                 )
             }
         }
-        //.padding(.horizontal, 16)
+        .padding(.horizontal, 16)
     }
 }
 

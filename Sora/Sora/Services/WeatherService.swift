@@ -59,6 +59,8 @@ final class WeatherService {
             let sunrise = owmResponse.sys?.sunrise
             let sunset = owmResponse.sys?.sunset
             
+            let timezoneOffset = owmResponse.timezone
+            
             return CityWeather(
                 temperature: temperature,
                 symbolName: symbolName,
@@ -71,7 +73,8 @@ final class WeatherService {
                 sunrise: sunrise,
                 sunset: sunset,
                 windSpeed: windSpeed,
-                windDeg: windDeg
+                windDeg: windDeg,
+                timezoneOffset: timezoneOffset
             )
             
         } catch {
@@ -101,7 +104,7 @@ final class WeatherService {
                 let timeInterval = item.dt
                 
                 let tempString = self.formatTemperature(rawTemp)
-                let timeString = self.formatTime(from: timeInterval)
+                let timeString = ""
                 
                 let iconName = self.getSFName(for: item.weather.first?.icon ?? "01d")
                 let description = item.weather.first?.description.capitalized ?? ""

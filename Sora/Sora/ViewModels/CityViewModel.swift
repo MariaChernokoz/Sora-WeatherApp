@@ -216,7 +216,15 @@ final class CityViewModel: ObservableObject {
                 updatedCity.weatherData = weatherData
                 
                 let now = Date()
-                updatedCity.hourlyForecasts = hourlyForecasts.filter { $0.date >= now }
+                
+                let twelveHoursLater = Calendar.current.date(byAdding: .hour, value: 24, to: now) ?? now.addingTimeInterval(24 * 3600)
+                
+                let limitedHourlyForecasts = hourlyForecasts
+                    .filter { $0.date >= now }
+                    .filter { $0.date <= twelveHoursLater }
+                    .prefix(8)
+                
+                updatedCity.hourlyForecasts = Array(limitedHourlyForecasts)
                 
                 updatedCity.dailyForecasts = dailyForecasts
                 

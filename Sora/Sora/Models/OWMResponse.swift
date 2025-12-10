@@ -12,6 +12,7 @@ struct OWMResponse: Codable {
     let weather: [Weather]
     let wind: Wind?
     let sys: Sys?
+    let timezone: Int?
     
     struct Main: Codable {
         let temp: Double

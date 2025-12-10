@@ -18,6 +18,9 @@ struct DailyForecastRow: View {
     }()
     
     var body: some View {
+        Divider()
+            .overlay(Color.white.opacity(0.3))
+        
         HStack {
             Text(DailyForecastRow.dayFormatter.string(from: forecast.date))
                 .font(.headline)
@@ -33,12 +36,6 @@ struct DailyForecastRow: View {
                     .font(.title2)
                     .foregroundColor(.orange)
                     .frame(width: 30)
-
-//                Text(forecast.description.capitalized)
-//                    .font(.subheadline)
-//                    .foregroundColor(.white.opacity(0.9))
-//                    .frame(width: 90, alignment: .leading)
-//                    .monospacedDigit()
             }
             
             Spacer()
@@ -67,10 +64,7 @@ struct DailyForecastRow: View {
                     .monospacedDigit()
             }
         }
-        .padding(.vertical, 8)
-        
-        Divider()
-            .overlay(Color.white.opacity(0.3))
+        .padding(.top, 8)
     }
 }
 

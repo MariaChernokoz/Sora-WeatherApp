@@ -23,8 +23,9 @@ struct CityWeather: Codable, Identifiable, Equatable {
     let sunset: Int?
     let windSpeed: Double
     let windDeg: Double
+    let timezoneOffset: Int?
     
     private enum CodingKeys: String, CodingKey {
-        case temperature, symbolName, description, feels_like, temp_min, temp_max, pressure, humidity, sunrise, sunset, windSpeed, windDeg
+        case temperature, symbolName, description, feels_like, temp_min, temp_max, pressure, humidity, sunrise, sunset, windSpeed, windDeg, timezoneOffset
     }
 }

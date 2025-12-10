@@ -9,11 +9,24 @@ import SwiftUI
 
 struct HourlyForecastCard: View {
     let forecast: HourlyForecast
+    let timezoneOffset: Int?
+    
+    private func formatTime(from date: Date, offset: Int?) -> String {
+        let formatter = DateFormatter()
+        if let offset = offset, let timeZone = TimeZone(secondsFromGMT: offset) {
+            formatter.timeZone = timeZone
+        } else {
+            formatter.timeZone = .current
+        }
+        formatter.locale = Locale(identifier: "ru_RU")
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
+    }
     
     var body: some View {
         VStack(spacing: 10) {
             
-            Text(forecast.time)
+            Text(formatTime(from: forecast.date, offset: timezoneOffset))
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundColor(.white.opacity(0.9))
@@ -29,10 +42,6 @@ struct HourlyForecastCard: View {
                 .foregroundColor(.white)
         }
         .padding(.top, 8)
-//        .frame(width: 80)
-//        .background(Color.black.opacity(0.35))
-//        .glassEffect(.regular)
-//        .cornerRadius(60)
     }
 }
 
