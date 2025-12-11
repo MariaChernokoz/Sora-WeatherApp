@@ -26,6 +26,21 @@ final class WeatherService {
         return value
     }
     
+    func fetchCityName(for coordinates: CLLocationCoordinate2D) async throws -> String {
+        let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
+        let geocoder = CLGeocoder()
+        
+        let placemarks = try await geocoder.reverseGeocodeLocation(location)
+        
+        if let city = placemarks.first?.locality {
+            return city
+        } else if let name = placemarks.first?.name {
+            return name
+        } else {
+            throw NSError(domain: "LocationError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Не удалось определить город по координатам."])
+        }
+    }
+    
     func fetchWeather(for coordinate: CLLocationCoordinate2D) async throws -> CityWeather {
         
         let urlString = "\(baseUrl)?lat=\(coordinate.latitude)&lon=\(coordinate.longitude)&appid=\(apiKey)&units=metric&lang=ru"

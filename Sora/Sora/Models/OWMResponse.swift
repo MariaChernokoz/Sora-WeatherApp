@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct OWMResponse: Codable {
+public struct OWMResponse: Codable {
     let main: Main
     let weather: [Weather]
     let wind: Wind?

@@ -7,29 +7,32 @@
 
 import Foundation
 import CoreLocation
+import SwiftData
 
-struct City: Identifiable, Equatable {
-    let id: UUID = UUID()
+public struct City: Identifiable, Equatable {
+    public let id: UUID = UUID()
     let name: String
     let latitude: Double
     let longitude: Double
     var isCurrentLocation: Bool
-    
+
     var weatherData: CityWeather?
     var hourlyForecasts: [HourlyForecast]?
     var dailyForecasts: [DailyForecast]?
-    
+
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
-    
+
+    #if !WIDGET_EXTENSION
     init(entity: CityEntity) {
         self.name = entity.name
         self.latitude = entity.latitude
         self.longitude = entity.longitude
         self.isCurrentLocation = entity.isCurrentLocation
     }
-    
+    #endif // !WIDGET_EXTENSION
+
     init(name: String, latitude: Double, longitude: Double, isCurrentLocation: Bool, weatherData: CityWeather? = nil) {
         self.name = name
         self.latitude = latitude

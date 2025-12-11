@@ -11,6 +11,7 @@ import Combine
 import SwiftUI
 import CoreLocation
 import SwiftData
+import WidgetKit
 
 @MainActor
 final class CityViewModel: ObservableObject {
@@ -29,6 +30,13 @@ final class CityViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     private let context: ModelContext
+    
+    private let appGroupName = "group.maria.SoraWeather"
+    private let userDefaultsKey = "lastKnownLocation"
+    
+    private var sharedUserDefaults: UserDefaults? {
+        return UserDefaults(suiteName: appGroupName)
+    }
 
     init(context: ModelContext,
          cityService: CityService = CityService(),
@@ -139,6 +147,15 @@ final class CityViewModel: ObservableObject {
 
         print("--- [Location Update] ---")
         print("Новые координаты: Lat \(coordinates.latitude), Lon \(coordinates.longitude)")
+        
+        let locationData: [String: Double] = [
+            "latitude": coordinates.latitude,
+            "longitude": coordinates.longitude
+        ]
+        
+        sharedUserDefaults?.set(locationData, forKey: userDefaultsKey)
+        
+        WidgetCenter.shared.reloadTimelines(ofKind: "WeatherWidget")
 
         weatherTask = Task { @MainActor in
             guard !Task.isCancelled else { return }

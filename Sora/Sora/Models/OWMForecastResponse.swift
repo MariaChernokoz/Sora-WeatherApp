@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - 5 day / 3 hour forecast model
-struct ForecastOWMResponse: Codable {
+public struct ForecastOWMResponse: Codable {
     let list: [ForecastItem]
     let city: CityInfo
     

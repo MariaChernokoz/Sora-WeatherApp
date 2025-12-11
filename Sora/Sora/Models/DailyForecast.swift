@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct DailyForecast: Identifiable, Equatable {
-    let id = UUID()
+public struct DailyForecast: Identifiable, Equatable {
+    public let id = UUID()
     let date: Date
     let minTemperature: Double
     let maxTemperature: Double

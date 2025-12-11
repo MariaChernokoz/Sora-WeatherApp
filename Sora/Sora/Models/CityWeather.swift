@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct CityWeather: Codable, Identifiable, Equatable {
-    let id = UUID()
+public struct CityWeather: Codable, Identifiable, Equatable {
+    public let id = UUID()
     
     let temperature: String
     let symbolName: String
